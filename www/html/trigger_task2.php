@@ -5,7 +5,13 @@
 	$sql = "select content from xss where username='$user' order by id DESC limit 1";
 	$result = mysqli_query($link, $sql);
 	$row = mysqli_fetch_assoc($result)["content"];
+	
+	if(htmlspecialchars($row) !== $row){
+  	    echo("Special characters found!");
+	    return false;
+	}else{
 	echo "The last xss code: [" . $row ."]";
+	}
 ?>
 
 <!DOCTYPE html>
