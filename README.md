@@ -22,8 +22,9 @@ cd /var/www/html
 ls
 
 3. Task 1, Reflected XSS, task1.php can be exploited by 
-<body onload =alert('Baizura,A0177718N')> . To prevent this exploitation, we edit on the text editor in linux.
+"<body onload =alert('Baizura,A0177718N')>" . To prevent this exploitation, we edit on the text editor in linux.
 nano task1.php .
+
 We insert code that consists of special characters and when the code is submitted, it will send an alert that the input consist special characters.
 Otherwise, the web page will run normally.
   
