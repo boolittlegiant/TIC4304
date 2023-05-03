@@ -9,7 +9,10 @@
         function checkpost() {
             if (myform.content.value=="") {
                 alert("Please input xss attack code!");
-            }
+            }else if(/[\\/<>&'"]/.test(myform.content.value)){
+		alert("Special characters is no allowed.");
+		return false;
+	    }
         }
     </script>
     <div class="page-header">
